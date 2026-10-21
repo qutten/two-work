@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>云雀 3D 打印机 · 软件方案可视化</title>
+<style>
+  :root{--bg:#0A0E14;--panel:#11161F;--panel2:#161D28;--line:#222C3A;--t1:#E6EDF3;--t2:#8B949E;--cyan:#00E5C0;--amber:#FFB020;--red:#FF4757;--blue:#4C8DFF}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--t1);font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;line-height:1.6;padding:0 0 80px}
+  .num{font-variant-numeric:tabular-nums;font-family:"JetBrains Mono",Consolas,monospace}
+  header{padding:48px 40px 32px;border-bottom:1px solid var(--line);background:radial-gradient(ellipse at top left,rgba(0,229,192,.08),transparent 60%)}
+  .kicker{color:var(--cyan);font-size:13px;letter-spacing:.2em;margin-bottom:12px}
+  h1{font-size:38px;font-weight:700;letter-spacing:-.02em}
+  h1 span{color:var(--cyan)}
+  .sub{color:var(--t2);margin-top:10px;font-size:14px}
+  .meta{display:flex;gap:28px;margin-top:24px;flex-wrap:wrap}
+  .meta div{border-left:2px solid var(--cyan);padding-left:12px}
+  .meta b{display:block;font-size:18px;color:var(--t1)}
+  .meta small{color:var(--t2);font-size:12px}
+  nav{position:sticky;top:0;z-index:100;background:rgba(10,14,20,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:0 40px;display:flex;gap:4px;overflow-x:auto}
+  nav a{color:var(--t2);text-decoration:none;padding:14px 16px;font-size:14px;white-space:nowrap;transition:.2s;border-bottom:2px solid transparent}
+  nav a:hover{color:var(--cyan);border-bottom-color:var(--cyan)}
+  section{padding:48px 40px;max-width:1400px;margin:0 auto}
+  h2{font-size:24px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+  h2::before{content:"";width:4px;height:22px;background:var(--cyan);border-radius:2px}
+  .desc{color:var(--t2);font-size:14px;margin-bottom:28px;max-width:900px}
+  .arch{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:32px;display:flex;flex-direction:column;gap:0;align-items:center}
+  .layer{width:100%;border:1px solid var(--line);border-radius:10px;padding:18px 20px;background:var(--panel2);position:relative}
+  .layer.hl{border-color:rgba(0,229,192,.4);box-shadow:0 0 24px rgba(0,229,192,.08)}
+  .layer h4{font-size:15px;color:var(--cyan);margin-bottom:10px;display:flex;justify-content:space-between}
+  .layer h4 em{font-style:normal;color:var(--t2);font-size:12px;font-weight:400}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .chip{background:rgba(0,229,192,.08);border:1px solid rgba(0,229,192,.25);color:var(--t1);padding:5px 12px;border-radius:6px;font-size:13px}
+  .chip.blue{background:rgba(76,141,255,.08);border-color:rgba(76,141,255,.25)}
+  .chip.amber{background:rgba(255,176,32,.08);border-color:rgba(255,176,32,.25)}
+  .chip.red{background:rgba(255,71,87,.08);border-color:rgba(255,71,87,.25)}
+  .arrow{color:var(--line);font-size:20px;margin:6px 0;line-height:1}
+  .arrow span{color:var(--t2);font-size:11px;margin-left:8px}
+  table{width:100%;border-collapse:collapse;font-size:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th{background:var(--panel2);color:var(--t2);text-align:left;padding:12px 16px;font-weight:500;font-size:13px;border-bottom:1px solid var(--line)}
+  td{padding:11px 16px;border-bottom:1px solid rgba(34,44,58,.6)}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(0,229,192,.03)}
+  .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+  .p0{background:rgba(255,71,87,.15);color:#FF6B7A;border:1px solid rgba(255,71,87,.3)}
+  .p1{background:rgba(255,176,32,.15);color:#FFC15E;border:1px solid rgba(255,176,32,.3)}
+  .p2{background:rgba(139,148,158,.15);color:#A8B1BB;border:1px solid rgba(139,148,158,.3)}
+  .yes{color:var(--cyan)}
+  .no{color:#3A4553}
+  .gantt{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;overflow-x:auto}
+  .gantt-head,.gantt-row{display:grid;grid-template-columns:130px repeat(6,1fr);gap:0;min-width:760px;align-items:center}
+  .gantt-head div{color:var(--t2);font-size:12px;padding:6px 8px;text-align:center}
+  .gantt-head div:first-child{text-align:left}
+  .gantt-row{border-top:1px solid var(--line)}
+  .gantt-row .name{padding:12px 8px;font-size:13px;color:var(--t1)}
+  .gantt-row .cell{padding:12px 4px}
+  .bar{height:26px;border-radius:6px;display:flex;align-items:center;padding-left:8px;font-size:11px;color:#04120F;font-weight:600;background:linear-gradient(90deg,var(--cyan),#00B396);white-space:nowrap;overflow:hidden}
+  .bar.b2{background:linear-gradient(90deg,#4C8DFF,#2F6FE0);color:#fff}
+  .bar.b3{background:linear-gradient(90deg,#FFB020,#E09400);color:#1A1200}
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+  .flow-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;position:relative;transition:.25s}
+  .flow-card:hover{border-color:rgba(0,229,192,.4);transform:translateY(-2px)}
+  .flow-card .t{color:var(--cyan);font-size:13px;font-weight:600;margin-bottom:6px}
+  .flow-card .t small{color:var(--t2);font-weight:400;margin-left:6px}
+  .flow-card .txt{color:var(--t2);font-size:13px}
+  .flow-card .n{position:absolute;top:14px;right:16px;color:var(--line);font-size:22px;font-weight:700;font-family:monospace}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
+  .card h4{font-size:15px;margin-bottom:10px;color:var(--t1)}
+  .card p{color:var(--t2);font-size:13px}
+  .metric{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+  .metric div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;text-align:center}
+  .metric b{display:block;font-size:28px;color:var(--cyan);font-family:monospace;font-weight:700}
+  .metric small{color:var(--t2);font-size:12px}
+  .risk{border-left:3px solid var(--red);padding-left:16px;margin-bottom:16px}
+  .risk.warn{border-left-color:var(--amber)}
+  .risk.ok{border-left-color:var(--cyan)}
+  .risk b{font-size:14px}
+  .risk p{color:var(--t2);font-size:13px;margin-top:4px}
+  .phone-wrap{display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:300px;height:640px;background:var(--panel);border:2px solid var(--line);border-radius:32px;padding:20px 16px;display:flex;flex-direction:column;gap:14px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .phone::before{content:"";position:absolute;top:10px;left:50%;transform:translateX(-50%);width:80px;height:5px;background:var(--line);border-radius:3px}
+  .phone .title{text-align:center;color:var(--t2);font-size:12px;margin-top:8px}
+  .rings{display:flex;justify-content:space-around;margin-top:10px}
+  .ring{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;background:conic-gradient(var(--cyan) var(--deg,70%),#1B2534 0);position:relative}
+  .ring::after{content:"";position:absolute;inset:9px;background:var(--panel);border-radius:50%}
+  .ring i{position:relative;z-index:2;font-style:normal;font-size:19px;font-weight:700;color:var(--t1);font-family:monospace}
+  .ring u{position:relative;z-index:2;text-decoration:none;font-size:10px;color:var(--t2)}
+  .ring.red{background:conic-gradient(var(--red) var(--deg,60%),#1B2534 0)}
+  .cam{height:150px;flex:1;min-height:120px;background:linear-gradient(135deg,#1a2332,#0d1219);border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#3A4553;font-size:12px;position:relative;overflow:hidden}
+  .cam::after{content:"";position:absolute;left:-20px;top:0;width:20px;height:100%;background:linear-gradient(90deg,transparent,rgba(0,229,192,.08));animation:sweep 3s linear infinite}
+  @keyframes sweep{to{left:100%}}
+  .statusbar{display:flex;justify-content:space-between;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--t2)}
+  .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
+  .btn{padding:12px;border-radius:8px;text-align:center;font-size:13px;background:rgba(0,229,192,.1);border:1px solid rgba(0,229,192,.3);color:var(--cyan)}
+  .btn.stop{background:rgba(255,71,87,.12);border-color:rgba(255,71,87,.4);color:var(--red);font-weight:600}
+  .desk{flex:1;min-width:520px;height:640px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+  .deskbar{display:flex;justify-content:space-between;align-items:center;background:var(--panel2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--t2)}
+  .deskbar .estop{background:var(--red);color:#fff;padding:5px 14px;border-radius:6px;font-weight:700;font-size:12px}
+  .deskbody{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;flex:1;min-height:0}
+  .desk-left{display:flex;flex-direction:column;gap:10px;min-height:0}
+  .desk-right{display:flex;flex-direction:column;gap:10px;min-height:0}
+  .mini{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:12px;color:var(--t2)}
+  .graph{height:110px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;position:relative;overflow:hidden}
+  .graph svg{width:100%;height:100%}
+  .log{height:90px;background:#0B1018;border:1px solid var(--line);border-radius:8px;padding:10px;font-family:monospace;font-size:11px;color:#5E6B7C;overflow:hidden}
+  .log b{color:var(--cyan)}
+  footer{text-align:center;color:var(--t2);font-size:12px;padding:40px;border-top:1px solid var(--line);margin-top:40px}
+  @media(max-width:700px){header,section,nav{padding-left:20px;padding-right:20px}h1{font-size:26px}.phone{width:100%}}
+</style>
+</head>
+<body>
+<header>
+  <div class="kicker">新一代信息技术 · 项目制 · 中职组</div>
+  <h1>云雀 <span>CoreXY</span> 3D 打印机 · 软件系统</h1>
+  <div class="sub">软硬一体闭环 · AI 视觉辅助 · 低成本可复制　｜　手机端 + 电脑端 + 本地触屏</div>
+  <div class="meta">
+    <div><b>4 人</b><small>团队规模</small></div>
+    <div><b>6 周</b><small>开发周期</small></div>
+    <div><b>17 项</b><small>功能点</small></div>
+    <div><b>纯内网</b><small>网络环境</small></div>
+    <div><b>60 分钟</b><small>答辩时长</small></div>
+  </div>
+</header>
+
+<nav>
+  <a href="#arch">架构</a>
+  <a href="#feature">功能矩阵</a>
+  <a href="#ui">界面预览</a>
+  <a href="#gantt">六周排期</a>
+  <a href="#flow">演示动线</a>
+  <a href="#metric">性能指标</a>
+  <a href="#risk">风险</a>
+</nav>
+
+<section id="arch">
+  <h2>系统架构</h2>
+  <p class="desc">三层分离：展示层只负责呈现，应用网关承担全部业务逻辑，设备控制层专注实时性。任何一层降级都不会拖垮其他层。</p>
+  <div class="arch">
+    <div class="layer hl">
+      <h4>展示层 Presentation <em>手机 / 电脑 / 红米2</em></h4>
+      <div class="row">
+        <div class="chip">手机端 · PWA / apk</div>
+        <div class="chip">电脑端 · Electron exe</div>
+        <div class="chip">红米2 · 浏览器全屏</div>
+        <div class="chip blue">React + TypeScript</div>
+      </div>
+    </div>
+    <div class="arrow">↓ <span>WebSocket (JSON-RPC) + HTTP</span></div>
+    <div class="layer hl">
+      <h4>应用网关层 Gateway <em>FastAPI · 运行于笔记本</em></h4>
+      <div class="row">
+        <div class="chip">状态聚合缓存</div>
+        <div class="chip">告警规则引擎</div>
+        <div class="chip">延时抓图任务</div>
+        <div class="chip">OpenCV 视觉检测</div>
+        <div class="chip">SQLite 曲线存储</div>
+        <div class="chip">文件管理</div>
+      </div>
+    </div>
+    <div class="arrow">↓ <span>Moonraker API</span></div>
+    <div class="layer">
+      <h4>设备控制层 Control <em>Klipper + Moonraker</em></h4>
+      <div class="row">
+        <div class="chip blue">主：笔记本</div>
+        <div class="chip amber">备：红米2（Termux）</div>
+      </div>
+    </div>
+    <div class="arrow">↓ <span>USB 串口</span></div>
+    <div class="layer">
+      <h4>执行层 Hardware <em>SKR 主板 + CoreXY</em></h4>
+      <div class="row">
+        <div class="chip">步进电机 ×4</div>
+        <div class="chip">加热棒 ×2</div>
+        <div class="chip">热敏电阻 ×2</div>
+        <div class="chip amber">断料开关</div>
+        <div class="chip blue">USB 摄像头</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="feature">
+  <h2>功能矩阵</h2>
+  <p class="desc">P0 必须完成，P1 显著加分，P2 有余力再做。范围之外的功能明确写入文档，避免蔓延。</p>
+  <table>
+    <thead><tr><th>编号</th><th>功能模块</th><th>优先级</th><th>手机端</th><th>电脑端</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td class="num">F-01</td><td>实时状态仪表盘</td><td><span class="tag p0">P0</span></td><td class="yes">✓</td><td class="yes">✓</td><td>温度双环 + 曲线 + 进度环</td></tr>
+      <tr><td class="num">F-02</td><td>摄像头实时画面</td><td><span class="tag p0">P0</span></td><td class="yes">✓</td><td class="yes">✓</td><td>MJPEG 流，延迟小于 2 秒</td></tr>
+      <tr><td class="num">F-03</td><td>打印控制</td><td><span class="tag p0">P0</span></td><td class="yes">✓</td><td class="yes">✓</td><td>暂停 / 恢复 / 急停</td></tr>
+      <tr><td class="num">F-04</td><td>温度与进给手动控制</td><td><span class="tag p0">P0</span></td><td class="yes">✓</td><td class="yes">✓</td><td>预热、进退料、倍率调节</td></tr>
+      <tr><td class="num">F-05</td><td>G-code 上传与管理</td><td><span class="tag p0">P0</span></td><td class="yes">✓</td><td class="yes">✓</td><td>分块上传、元数据解析</td></tr>
+      <tr><td class="num">F-06</td><td>故障告警</td><td><span class="tag p0">P0</span></td><td class="yes">✓</td><td class="yes">✓</td><td>断料 / 超温 / 失联 / 视觉</td></tr>
+      <tr><td class="num">F-07</td><td>延时抓图</td><td><span class="tag p0">P0</span></td><td class="no">—</td><td class="yes">✓</td><td>定时抓拍，不合成视频</td></tr>
+      <tr><td class="num">F-08</td><td>演示模式</td><td><span class="tag p0">P0</span></td><td class="yes">✓</td><td class="yes">✓</td><td>模拟数据兜底</td></tr>
+      <tr><td class="num">F-09</td><td>虚拟摇杆 XYZ</td><td><span class="tag p1">P1</span></td><td class="yes">✓</td><td class="yes">✓</td><td>软限位保护</td></tr>
+      <tr><td class="num">F-10</td><td>3D 模型预览</td><td><span class="tag p1">P1</span></td><td class="yes">✓</td><td class="yes">✓</td><td>Three.js 渲染 STL</td></tr>
+      <tr><td class="num">F-11</td><td>扫码连接</td><td><span class="tag p1">P1</span></td><td class="yes">✓</td><td class="no">—</td><td>二维码快速接入</td></tr>
+      <tr><td class="num">F-12</td><td>打印完成播报</td><td><span class="tag p1">P1</span></td><td class="yes">✓</td><td class="yes">✓</td><td>Web Speech 语音</td></tr>
+      <tr><td class="num">F-13</td><td>耗材余量估算</td><td><span class="tag p1">P1</span></td><td class="yes">✓</td><td class="yes">✓</td><td>按 G-code 元数据扣减</td></tr>
+      <tr><td class="num">F-14</td><td>参数配置页</td><td><span class="tag p1">P1</span></td><td class="no">—</td><td class="yes">✓</td><td>校验 + 备份 + 回滚</td></tr>
+      <tr><td class="num">F-15</td><td>配置包导出</td><td><span class="tag p1">P1</span></td><td class="no">—</td><td class="yes">✓</td><td>zip 导入导出</td></tr>
+      <tr><td class="num">F-16</td><td>G-code 逐层预览</td><td><span class="tag p2">P2</span></td><td class="no">—</td><td class="yes">✓</td><td>技术深度展示</td></tr>
+      <tr><td class="num">F-17</td><td>打印报告导出</td><td><span class="tag p2">P2</span></td><td class="no">—</td><td class="yes">✓</td><td>PDF 单页报告</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="ui">
+  <h2>界面预览</h2>
+  <p class="desc">深色科技风：黑底 + 科技青高亮，数字使用等宽字体避免跳动。手机竖屏仪表盘，电脑单页多面板。</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="title">云雀 · 打印中</div>
+      <div class="rings">
+        <div class="ring" style="--deg:45%"><i>210</i><u>喷头 ℃</u></div>
+        <div class="ring red" style="--deg:60%"><i>60</i><u>热床 ℃</u></div>
+      </div>
+      <div class="cam">摄像头画面 MJPEG</div>
+      <div class="statusbar"><span>进度 62%</span><span>剩余 1:27</span></div>
+      <div class="statusbar"><span>X 128.4</span><span>Y 96.2</span><span>Z 12.6</span></div>
+      <div class="btns">
+        <div class="btn">暂停</div>
+        <div class="btn stop">急停</div>
+      </div>
+    </div>
+    <div class="desk">
+      <div class="deskbar"><span>云雀 #1　·　已连接　·　192.168.1.100:8000</span><span class="estop">急停</span></div>
+      <div class="deskbody">
+        <div class="desk-left">
+          <div class="cam" style="height:250px">摄像头画面（左侧 40%）</div>
+          <div class="log"><b>[09:32:01]</b> Heating done, extruder 210.0/210.0<br><b>[09:32:14]</b> Layer 038 / 120<br><b>[09:33:02]</b> Progress 62%<br><b>[09:33:20]</b> Bed 60.0/60.0 stable</div>
+        </div>
+        <div class="desk-right">
+          <div class="mini">温度双环 · 进度环</div>
+          <div class="graph">
+            <svg viewBox="0 0 300 110" preserveAspectRatio="none">
+              <polyline fill="none" stroke="#00E5C0" stroke-width="2" points="0,80 30,60 60,42 90,34 120,30 150,32 180,28 210,30 240,27 270,29 300,28"/>
+              <polyline fill="none" stroke="#FF4757" stroke-width="2" points="0,100 30,92 60,86 90,82 120,80 150,82 180,80 210,81 240,79 270,80 300,80"/>
+            </svg>
+          </div>
+          <div class="mini">实时日志 / 终端输出</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="gantt">
+  <h2>六周排期</h2>
+  <p class="desc">每周一个主题，周末有可演示的交付物。第七周预留缓冲。</p>
+  <div class="gantt">
+    <div class="gantt-head"><div>任务</div><div>W1</div><div>W2</div><div>W3</div><div>W4</div><div>W5</div><div>W6</div></div>
+    <div class="gantt-row"><div class="name">环境与通信</div><div class="cell"><div class="bar">Klipper 打通</div></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div>
+    <div class="gantt-row"><div class="name">核心仪表盘</div><div class="cell"></div><div class="cell"><div class="bar">双环 + 曲线</div></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div>
+    <div class="gantt-row"><div class="name">控制与文件</div><div class="cell"></div><div class="cell"></div><div class="cell"><div class="bar">暂停 / 上传 / 启动</div></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div>
+    <div class="gantt-row"><div class="name">摄像头与视觉</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"><div class="bar b3">MJPEG + 检测</div></div><div class="cell"></div><div class="cell"></div></div>
+    <div class="gantt-row"><div class="name">电脑端打包</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"><div class="bar b2">Electron exe</div></div><div class="cell"></div></div>
+    <div class="gantt-row"><div class="name">联调与答辩</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"><div class="bar b3">演示模式 + 彩排</div></div></div>
+  </div>
+</section>
+
+<section id="flow">
+  <h2>答辩演示动线（60 分钟）</h2>
+  <p class="desc">以现场演示为主，边演边讲。演示环节占一半时间，其余为铺垫与技术深度。</p>
+  <div class="flow">
+    <div class="flow-card"><div class="n">01</div><div class="t">开场 <small>5 分钟</small></div><div class="txt">团队介绍，一句话价值主张：把「必须守着」变成「可以走开」。</div></div>
+    <div class="flow-card"><div class="n">02</div><div class="t">痛点 <small>10 分钟</small></div><div class="txt">展示打印失败实物废件，讲三大痛点：守着、看不见、无数据。</div></div>
+    <div class="flow-card"><div class="n">03</div><div class="t">架构 <small>10 分钟</small></div><div class="txt">投屏本页架构图，讲三层分离与双冗余设计。</div></div>
+    <div class="flow-card"><div class="n">04</div><div class="t">手机演示 <small>10 分钟</small></div><div class="txt">手机扫码连接 → 仪表盘 → 上传文件 → 启动打印 → 触发断料告警。</div></div>
+    <div class="flow-card"><div class="n">05</div><div class="t">电脑演示 <small>10 分钟</small></div><div class="txt">大屏监控、实时曲线、日志窗口、参数配置页。</div></div>
+    <div class="flow-card"><div class="n">06</div><div class="t">技术深度 <small>10 分钟</small></div><div class="txt">视觉算法原理、WebSocket 实时性、性能数据。</div></div>
+    <div class="flow-card"><div class="n">07</div><div class="t">未来 <small>3 分钟</small></div><div class="txt">多机管理路线图、轻量模型升级、教育场景推广。</div></div>
+    <div class="flow-card"><div class="n">08</div><div class="t">问答 <small>2 分钟</small></div><div class="txt">备好三层差异化表述，主动说明局限。</div></div>
+  </div>
+</section>
+
+<section id="metric">
+  <h2>性能指标</h2>
+  <p class="desc">答辩时拿得出的硬数据，全部可现场测量。</p>
+  <div class="metric">
+    <div><b>&lt;1s</b><small>状态推送延迟</small></div>
+    <div><b>&lt;500ms</b><small>控制指令响应</small></div>
+    <div><b>&lt;3s</b><small>启动到首屏</small></div>
+    <div><b>&lt;2s</b><small>摄像头画面延迟</small></div>
+    <div><b>72h</b><small>连续运行稳定</small></div>
+    <div><b>&lt;300MB</b><small>前端内存占用</small></div>
+  </div>
+</section>
+
+<section id="risk">
+  <h2>风险与应对</h2>
+  <p class="desc">答辩时主动讲风险，比被问出来更有说服力。</p>
+  <div class="risk"><b>R-01 红米2 跑 Klipper 失败</b><p>1GB 内存跑 Python 服务容易 OOM。应对：主方案改为笔记本跑 Klipper，红米2 只做触屏，答辩讲双冗余设计。</p></div>
+  <div class="risk warn"><b>R-02 硬件装配延期</b><p>软件先行开发，用模拟数据对接；W1 必须完成装配，否则整体顺延。</p></div>
+  <div class="risk warn"><b>R-03 现场网络不稳定</b><p>演示模式兜底 + 备播视频 + 自带路由器组网，三保险。</p></div>
+  <div class="risk warn"><b>R-04 视觉检测误报</b><p>阈值可调 + 连续两次才告警 + 定位为辅助提醒而非自动停机。</p></div>
+  <div class="risk ok"><b>R-07 评委质疑与开源方案的区别</b><p>准备三层差异化表述：定位差异、架构差异、能力差异。</p></div>
+</section>
+
+<footer>云雀 CoreXY 3D 打印机 · 软件方案可视化　｜　生成于 2026-10-21　｜　配套文档：docs/需求规格说明书.md</footer>
+</body>
+</html>

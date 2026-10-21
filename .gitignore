@@ -1,0 +1,36 @@
+# 依赖与构建产物
+node_modules/
+dist/
+build/
+release/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# 本地数据与日志
+*.db
+*.sqlite
+*.sqlite3
+data/
+logs/
+tmp/
+.cache/
+
+# 截图与临时文件（按项目规则统一放 screenshots/）
+screenshots/*
+!screenshots/.gitkeep
+!screenshots/*.png
+
+# 编辑器与系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# 环境变量与密钥
+.env
+.env.local
+*.key
